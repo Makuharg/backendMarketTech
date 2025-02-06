@@ -208,14 +208,15 @@ app.post('/user/cart', authenticateUser, async(req,res)=>{
     try {
         // verificamos si el producto ya esta en el carrito de compras
         const consulta = 'SELECT * FROM cart WHERE user_id = $1 AND product_id = $2';
-        const values = [ product_id, user_id];
+        const values = [  user_id, product_id];
         const existingCartItem = await pool.query(consulta, values);
+        console.log(existingCartItem.rows[0])
 
         if(existingCartItem.rows.length > 0){
             // Si el producto ya está en el carrito, incrementar la cantidad en 1
-            const consulta = 'UPDATE cart SET quantity = quantity + 1 WHERE id $1 RETURNING *';
-            const value = [ existingCartItem.rows[0].id]
-            await pool.query(consulta, value);
+            const consulta = 'UPDATE cart SET quantity = quantity + 1 WHERE product_id = $1 RETURNING *';
+            const value = [ existingCartItem.rows[0].product_id]
+            const updatedCartItem = await pool.query(consulta, value);
             return res.status(200).json({
                 message: 'Cantidad incrementada en el carrito.',
                 cartItem: updatedCartItem.rows[0]
@@ -240,16 +241,16 @@ app.post('/user/cart', authenticateUser, async(req,res)=>{
 
 
 // incrementar o decrementar cantidad de un producto en el carrito de compras 
-app.post('/user/cart/update/product_id', authenticateUser, async(req,res)=>{
+app.post('/user/cart/:product_id', authenticateUser, async(req,res)=>{
     const product_id = req.params.product_id;
     const { action } = req.body; // "increment" o "decrement"
-    const userId = req.user.id; // Obtener el ID del usuario autenticado
-
+    const user_id = req.user.id; // Obtener el ID del usuario autenticado
+    console.log(product_id, action, user_id)
     try {
         // Verificar si el producto está en el carrito del usuario
         const existingCartItem = await pool.query(
             'SELECT * FROM cart WHERE user_id = $1 AND product_id = $2',
-            [userId, product_id]
+            [user_id, product_id]
         );
 
         if (existingCartItem.rows.length === 0) {
@@ -261,20 +262,20 @@ app.post('/user/cart/update/product_id', authenticateUser, async(req,res)=>{
         if (action === 'increment') {
             // Incrementar la cantidad en 1
             updatedCartItem = await pool.query(
-                'UPDATE cart SET quantity = quantity + 1 WHERE id = $1 RETURNING *',
-                [existingCartItem.rows[0].id]
+                'UPDATE cart SET quantity = quantity + 1 WHERE product_id = $1 RETURNING *',
+                [existingCartItem.rows[0].product_id]
             );
         } else if (action === 'decrement') {
             // Si la cantidad es 1, eliminar el producto del carrito
             if (existingCartItem.rows[0].quantity === 1) {
-                await pool.query('DELETE FROM cart WHERE id = $1', [existingCartItem.rows[0].id]);
+                await pool.query('DELETE FROM cart WHERE product_id = $1', [existingCartItem.rows[0].product_id]);
                 return res.status(200).json({ message: 'Producto eliminado del carrito.' });
             }
 
             // Decrementar la cantidad en 1
             updatedCartItem = await pool.query(
-                'UPDATE cart SET quantity = quantity - 1 WHERE id = $1 RETURNING *',
-                [existingCartItem.rows[0].id]
+                'UPDATE cart SET quantity = quantity - 1 WHERE product_id = $1 RETURNING *',
+                [existingCartItem.rows[0].product_id]
             );
         } else {
             return res.status(400).json({ message: 'Acción no válida. Use "increment" o "decrement".' });
