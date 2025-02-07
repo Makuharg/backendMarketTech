@@ -1,148 +1,48 @@
 const { pool } = require("./server/server");
+const SignupRoutes = require('./routes/signupRoutes');
+const LoginRoutes = require('./routes/loginRoutes');
+const NewProductRoutes = require('./routes/newProductRoutes');
 const express = require('express');
 const cors = require('cors');
-const bcrypt = require('bcryptjs');
 const jwtKey = "Desafio6LATAM";
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = 'contraseñaProhibida'
+const { authenticateUser } = require("./middlewares/authUser");
 const app = express();
 
 //levantamos servidor
 app.listen(3000, console.log("Server on"));
+
+//middlewares
+app.use(express.json());
+app.use(cors());
+
 
 app.get('/users', async(req,res)=>{
     const { rows } = await pool.query('SELECT * FROM users');
     res.json(rows);
 });
 
-//middlewares
-app.use(express.json());
-app.use(cors());
-
-// Middleware de autenticación
-const authenticateUser = (req, res, next) => {
-    const Authorization = req.header('Authorization');
-    const token = Authorization.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ message: 'Acceso denegado. No se proporcionó un token.' });
-    }
-
-    try {
-        jwt.verify(token, jwtKey); // Verificar el token
-        const decoded = jwt.decode(token);
-        req.user = decoded;
-        console.log(decoded)
-        next();
-    } catch (error) {
-        res.status(400).json({ message: 'Token inválido.' });
-    }
-};
-
-// registro de usuario
-app.post('/signup', async(req,res)=>{
-    let { username, email, phone_number, password_hash } = req.body;
-
-    try {
-        // hash en el password para ocultarla
-        const securePassword = bcrypt.hashSync(password_hash, 10);
-        password_hash = securePassword;
-
-        // creamos consulta a base SQL con los siguientes VALUES
-        const consulta = "INSERT INTO users values (DEFAULT, $1, $2, $3, $4, DEFAULT)";
-        const values = [username, email, phone_number, securePassword];
-
-        // si el registro es correcto rowCount = 1
-        const { rowCount } = await pool.query(consulta, values);
-        
-        // validacion para que no falten campos por completar
-        if(rowCount>0){
-            res.status(200).json("Usuario registrado con éxito");
-        }else{
-            throw Error("Por favor complete todos los campos");
-        };       
-    } catch (error) {
-        if (error.code === '23505') { // Código de error de PostgreSQL para duplicados
-            res.status(400).json({ error: 'El email o el nombre de usuario ya está registrado' });
-        } else if (error.code === '22001') { // Código de error de longitud excesiva
-            res.status(400).json({ error: 'Uno de los campos excede la longitud permitida' });
-        } else {
-            res.status(500).json({
-                code: error.code || 500,
-                message: error.message || 'Error interno del servidor'
-            });
-        };          
-    };
+app.get('/products', async(req,res)=>{
+    const { rows } = await pool.query('SELECT * FROM products');
+    res.json(rows);
 });
+
+app.get('/cart/:user_id', async(req,res)=>{
+    const { user_id } = req.params;
+    const consulta = 'SELECT * FROM cart WHERE user_id = $1';
+    const value = [ user_id ]
+    const { rows } = await pool.query(consulta, value);
+    res.json(rows);
+});
+
+// signup de usuario
+app.use('/api', SignupRoutes);
 
 // login de usuario
-app.post('/login', async(req,res)=>{
-    const { email, password_hash } = req.body;
-    try {
-        // Validación básica
-        if (!email || !password_hash) {
-            return res.status(400).json({ error: 'Faltan campos obligatorios' });
-        }
-
-        // Consulta para obtener el usuario por email
-        const consulta = 'SELECT * FROM users WHERE email = $1';
-        const value = [email];
-
-        const { rows, rowCount } = await pool.query(consulta, value);
-        console.log(rows)
-
-        // Verificar si el usuario existe
-        if (rowCount === 0) {
-            throw { code: 404, message: 'El usuario ingresado no existe' };
-        }
-
-        // comparamos contraseña con contraseña encriptada
-        const { password_hash: securePasword } = rows[0];
-        const passwordCorrecta = bcrypt.compareSync(password_hash, securePasword);
-
-        if (!passwordCorrecta) {
-            throw { code: 401, message: 'Contraseña incorrecta' };
-        };
-            
-        // generamos token
-        const token = jwt.sign({ id: rows[0].id, email: rows[0].email }, jwtKey);
-        console.log(token)
-
-        // Respuesta exitosa
-        res.status(200).json({
-            data: rows[0], // Devuelve los datos del usuario
-            token: token   // Devuelve el token
-        });
-
-    } catch (error) {
-        res.status(error.code || 500).json({
-            code: error.code || 500,
-            message: error.message
-        });          
-    };
-});
-
+app.use('/api', LoginRoutes);
 
 // registro de un producto
-app.post('/user/product', authenticateUser, async(req,res)=>{
-    const {  title, description, price, image_url, stock } = req.body;
-    const user_id = req.user.id; // Obtener el ID del usuario autenticado
-
-    try {
-        const consulta = 'INSERT INTO products (user_id, title, description, price, image_url, stock) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *';       
-        const values = [  user_id, title, description, price, image_url, stock ];
-
-        const { rows, rowCount } = await pool.query(consulta, values);
-        res.status(201).json({
-            message: 'Producto registrado con exito',
-            rows: rows,
-            rowCount: rowCount
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al registrar el producto' });        
-    };
-});
+app.use('/api', NewProductRoutes);
 
 // modificar producto registrado
 app.put('/user/product/:id', authenticateUser, async(req,res)=>{
@@ -202,8 +102,9 @@ app.delete('/user/product/:id', authenticateUser, async(req,res)=>{
 
 // El usuario agrega un producto al carrito
 app.post('/user/cart', authenticateUser, async(req,res)=>{
-    const { product_id } = req.body;
+    const { product_id, title, image_url, price } = req.body;
     const user_id = req.user.id;
+    console.log(product_id, title, image_url)
 
     try {
         // verificamos si el producto ya esta en el carrito de compras
@@ -223,8 +124,8 @@ app.post('/user/cart', authenticateUser, async(req,res)=>{
             });
         }else{
             // Si el producto no está en el carrito, agregarlo con cantidad 1
-            const consulta = 'INSERT INTO cart (user_id, product_id, quantity) VALUES ($1,$2,1) RETURNING *';
-            const values = [ user_id, product_id ];
+            const consulta = 'INSERT INTO cart (user_id, product_id, title, image_url, price, quantity) VALUES ($1,$2,$3,$4,$5,1) RETURNING *';
+            const values = [ user_id, product_id, title, image_url, price ];
             const newCartItem  = await pool.query(consulta, values);
             return res.status(201).json({
                 message: 'Producto agregado al carrito.',

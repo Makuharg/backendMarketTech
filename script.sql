@@ -26,6 +26,9 @@ CREATE TABLE products (
 CREATE TABLE cart (
     user_id INTEGER NOT NULL REFERENCES users(id),
     product_id INTEGER NOT NULL REFERENCES products(id),
+    title VARCHAR(255) NOT NULL,
+    image_url TEXT,
+    price NUMERIC(10,2) NOT NULL CHECK (price > 0),
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     added_at TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY (user_id, product_id)  -- Clave compuesta
