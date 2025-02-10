@@ -7,9 +7,10 @@ const NewCartRoutes = require('./routes/newCartRoutes');
 const UpdateCartRoutes = require('./routes/updateCartRoutes');
 const DeleteCartRoutes = require('./routes/deleteCartRoutes');
 const CheckoutRoutes = require('./routes/checkoutRoutes');
+const ReviewRoutes = require('./routes/reviewRoutes');
+const GetRoutes = require('./routes/getRoutes');
 const express = require('express');
 const cors = require('cors');
-const { pool } = require('./server/server');
 const app = express();
 
 //levantamos servidor
@@ -19,27 +20,12 @@ app.listen(3000, console.log("Server on"));
 app.use(express.json());
 app.use(cors());
 
-app.get('/users', async(req,res)=>{
-    const { rows } = await pool.query('SELECT * FROM users');
-    res.json(rows);
-});
-
-app.get('/products', async(req,res)=>{
-    const { rows } = await pool.query('SELECT * FROM products');
-    res.json(rows);
-});
-
-app.get('/cart/:user_id', async(req,res)=>{
-    const { user_id } = req.params;
-    const consulta = 'SELECT * FROM cart WHERE user_id = $1';
-    const value = [ user_id ]
-    const { rows } = await pool.query(consulta, value);
-    res.json(rows);
-});
-
 //middlewares
 app.use(express.json());
 app.use(cors());
+
+// get Users, get Products, get Cart y get Transactions
+app.use('/api', GetRoutes);
 
 // signup de usuario
 app.use('/api', SignupRoutes);
@@ -60,19 +46,19 @@ app.use('/api', DeleteProductRoutes);
 // El usuario agrega un producto al carrito
 app.use('/api', NewCartRoutes);
 
+// comprar carrito de compras
+app.use('/api', CheckoutRoutes);
+
 // incrementar o decrementar cantidad de un producto en el carrito de compras 
 app.use('/api', UpdateCartRoutes);
 
 // eliminar todos los productos del carrito de compras
 app.use('/api', DeleteCartRoutes);
 
-// comprar carrito de compras
-app.use('/api', CheckoutRoutes);
+// funciones review de users
+app.use('/api', ReviewRoutes);
 
-// funciones review
-app.use('/api', CheckoutRoutes);
-
-// error ruta not found
+// error 404 ruta not found
 app.use("*", (req, res) => {
     res.status(404).send({ message: "La ruta que intenta consultar no existe" })
 });

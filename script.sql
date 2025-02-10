@@ -13,6 +13,7 @@ CREATE TABLE users (
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
+    category_id INTEGER NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     price NUMERIC(10,2) NOT NULL CHECK (price > 0),  -- Precio con decimales

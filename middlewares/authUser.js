@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const jwtKey = "tu_clave_secreta";
+const dotenv = require('dotenv');
+dotenv.config();
 
 // Middleware de autenticación
 
@@ -12,7 +13,7 @@ const authenticateUser = (req, res, next) => {
     }
 
     try {
-        jwt.verify(token, jwtKey); // Verificar el token
+        jwt.verify(token, process.env.AUTH_PASS); // Verificar el token
         const decoded = jwt.decode(token);
         req.user = decoded;
         console.log(decoded)
