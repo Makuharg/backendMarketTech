@@ -13,8 +13,11 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
+const port = process.env.PORT || 3500;
+const host = ('RENDER' in process.env) ? '0.0.0.0' : 'localhost';
+
 //levantamos servidor
-app.listen(3000, console.log("Server on"));
+app.listen({host: host, port: port});
 
 //middlewares
 app.use(express.json());
