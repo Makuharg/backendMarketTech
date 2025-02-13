@@ -7,9 +7,7 @@ const productView = {
         });
     },
     errorResponse: (res) => {
-        res.status(500).json({ 
-            message: 'Error al registrar el producto', error
-        });
+        res.status(500).json({ message: 'Error al registrar el producto' });
     }
 };
 
