@@ -1,5 +1,7 @@
-const productView = {
-    notFound: (res) => res.status(404).json({ message: 'Producto no encontrado o no tienes permiso para modificarlo.' }),
+const ProductView = {
+    notFound: (res) => res.status(404).json({
+        message: 'Producto no encontrado o no tienes permiso para modificarlo.'
+    }),
 
     success: (res, rows, rowCount) => {
         res.status(200).json({
@@ -9,7 +11,10 @@ const productView = {
         });
     },
 
-    error: (res) => res.status(500).json({ message: 'Error al actualizar el producto.' })
+    error: (res) => res.status(500).json({
+        message: 'Error al actualizar el producto.'
+    })
 };
 
-module.exports = productView;
+module.exports = ProductView;
+

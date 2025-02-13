@@ -1,23 +1,32 @@
 const ProductModel = require('../models/updateProductModel');
-const productView = require('../views/updateProductView');
+const ProductView = require('../views/updateProductView');
 
 const updateProduct = async (req, res) => {
     const product_id = req.params.id;
     const user_id = req.user.id;
-    const {category_id, title, description, price, image_url, stock } = req.body;
+    const { category_id, title, description, price, image_url, stock } = req.body;
 
     try {
+        // Verificar si el producto existe y pertenece al usuario
         const product = await ProductModel.getProductByIdAndUser(product_id, user_id);
 
-        if (product.rows.length === 0) {
-            return productView.notFound(res);
+        if (product.rowCount === 0) {
+            return ProductView.notFound(res);
         }
 
-        const { rows, rowCount } = await ProductModel.updateProduct(category_id, title,  description, price, image_url, stock, product_id);
-        productView.success(res, rows, rowCount);
+        
+        console.log('Valores recibidos:', { product_id, category_id, title, description, price, image_url, stock });
+        // Actualizar el producto
+        const { rows, rowCount } = await ProductModel.updateProduct(
+            product_id, category_id, title, description, price, image_url, stock
+        );
+        console.log('Resultado de la actualización:', rows);
+        ProductView.success(res, rows, rowCount);
     } catch (error) {
-        productView.error(res);
+        console.error(error);
+        ProductView.error(res);
     }
 };
 
 module.exports = { updateProduct };
+
