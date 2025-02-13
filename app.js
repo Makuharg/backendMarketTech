@@ -13,7 +13,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 const host = ('RENDER' in process.env) ? '0.0.0.0' : 'localhost';
 
 //levantamos servidor
