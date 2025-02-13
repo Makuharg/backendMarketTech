@@ -4,7 +4,7 @@ const productView = require('../views/updateProductView');
 const updateProduct = async (req, res) => {
     const product_id = req.params.id;
     const user_id = req.user.id;
-    const { title, description, price, image_url, stock } = req.body;
+    const {category_id, title, description, price, image_url, stock } = req.body;
 
     try {
         const product = await ProductModel.getProductByIdAndUser(product_id, user_id);
@@ -13,7 +13,7 @@ const updateProduct = async (req, res) => {
             return productView.notFound(res);
         }
 
-        const { rows, rowCount } = await ProductModel.updateProduct(title, description, price, image_url, stock, product_id);
+        const { rows, rowCount } = await ProductModel.updateProduct(category_id, title,  description, price, image_url, stock, product_id);
         productView.success(res, rows, rowCount);
     } catch (error) {
         productView.error(res);

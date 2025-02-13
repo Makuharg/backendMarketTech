@@ -5,8 +5,8 @@ const getProductByIdAndUser = async (product_id, user_id) => {
 };
 
 const updateProduct = async (title, description, price, image_url, stock, product_id) => {
-    const consulta = 'UPDATE products SET title = $1, description = $2, price = $3, image_url = $4, stock = $5 WHERE id = $6 RETURNING *';
-    const values = [title, description, price, image_url, stock, product_id];
+    const consulta = 'UPDATE products SET category_id = $1 title = $2, description = $3, price = $4, image_url = $5, stock = $6 WHERE id = $7 RETURNING *';
+    const values = [category_id, title, description, price, image_url, stock, product_id];
 
     return await pool.query(consulta, values);
 };
