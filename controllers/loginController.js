@@ -7,8 +7,15 @@ const jwtKey = "tu_clave_secreta"; // Clave secreta para JWT
 
 const login = async (req, res) => {
     const { email, password_hash } = req.body;
+    const Authorization = req.header('Authorization');
+    const existToken = Authorization.split(' ')[1];
 
     try {
+
+        if (existToken){
+            return res.status(400).json({ error: 'Ya has iniciado sesion' });
+        }
+
         // Validación básica
         if (!email || !password_hash) {
             return res.status(400).json({ error: 'Faltan campos obligatorios' });
