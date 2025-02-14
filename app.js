@@ -11,6 +11,7 @@ const ReviewRoutes = require('./routes/reviewRoutes');
 const GetRoutes = require('./routes/getRoutes');
 const express = require('express');
 const cors = require('cors');
+const { authenticateUser } = require('./middlewares/authUser');
 const app = express();
 
 const port = process.env.PORT || 3000;
@@ -47,7 +48,7 @@ app.use('/api', DeleteProductRoutes);
 
 // CARRITO DE COMPRAS
 // El usuario agrega un producto al carrito
-app.use('/api', NewCartRoutes);
+app.use('/api', authenticateUser, NewCartRoutes);
 
 // comprar carrito de compras
 app.use('/api', CheckoutRoutes);
