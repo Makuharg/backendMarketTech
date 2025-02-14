@@ -3,7 +3,7 @@ const responseView = require('../views/getResponseView');
 
 const getTransactions = async (req, res) => {
     try {
-        const { user_id } = req.user.id;
+        const { user_id } = req.params;
         const { rows } = await transactionModel.getUserTransactions(user_id);
         responseView.successResponse(res, rows);
     } catch (error) {
