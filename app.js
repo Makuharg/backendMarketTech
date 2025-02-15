@@ -53,7 +53,7 @@ app.use('/api', authenticateUser, CheckoutRoutes);
 // incrementar o decrementar cantidad de un producto en el carrito de compras 
 app.use('/api', UpdateCartRoutes);
 
-app.delete('api/user/cart/product/:product_id', authenticateUser, async (req, res) => {
+app.delete('/api/user/cart/product/:product_id', authenticateUser, async (req, res) => {
     const product_id = req.params.product_id; // ID del producto a eliminar
     const user_id = req.user.id; // ID del usuario autenticado
 
