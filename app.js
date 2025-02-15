@@ -81,18 +81,6 @@ app.delete('/api/user/cart/product/:product_id', authenticateUser, async (req, r
     }
 });
 
-// eliminar todos los productos del carrito de compras
-app.use('/api', DeleteCartRoutes);
-
-// funciones review de users
-app.use('/api', ReviewRoutes);
-
-// error 404 ruta not found
-app.use("*", (req, res) => {
-    res.status(404).send({ message: "La ruta que intenta consultar no existe" })
-});
-
-
 app.get('/api/transactions/detail/:transaction_id', authenticateUser, async (req, res) => {
     const transaction_id = req.params.id; // ID de la transacción
     const user_id = req.user.id; // ID del usuario autenticado
@@ -101,32 +89,30 @@ app.get('/api/transactions/detail/:transaction_id', authenticateUser, async (req
         // Obtener los detalles de la transacción
         const transactionDetails = await pool.query(
             `SELECT 
-                td.id,
-                td.transaction_id,
-                td.product_id,
-                p.name AS product_name,
-                td.quantity,
-                td.unit_price,
-                td.subtotal,
-                td.buyer_id,
-                td.seller_id,
-                u_buyer.username AS buyer_name,
-                u_seller.username AS seller_name,
-                t.date,
-                t.state
-             FROM 
-                transaction_details td
-             JOIN 
-                products p ON td.product_id = p.id
-             JOIN 
-                users u_buyer ON td.buyer_id = u_buyer.id
-             JOIN 
-                users u_seller ON td.seller_id = u_seller.id
-             JOIN 
-                transactions t ON td.transaction_id = t.id
-             WHERE 
-                td.transaction_id = $1 AND (td.buyer_id = $2 OR td.seller_id = $2)`,
-            [transaction_id, user_id]
+            td.id,
+            td.transaction_id,
+            td.product_id,
+            td.quantity,
+            td.unit_price,
+            td.subtotal,
+            td.buyer_id,
+            td.seller_id,
+            u_buyer.username AS buyer_name,
+            u_seller.username AS seller_name,
+            t.date
+         FROM 
+            transaction_details td
+         JOIN 
+            products p ON td.product_id = p.id
+         JOIN 
+            users u_buyer ON td.buyer_id = u_buyer.id
+         JOIN 
+            users u_seller ON td.seller_id = u_seller.id
+         JOIN 
+            transactions t ON td.transaction_id = t.id
+         WHERE 
+            td.transaction_id = $1`,
+            [transaction_id]
         );
 
         if (transactionDetails.rows.length === 0) {
@@ -155,6 +141,20 @@ app.get('/api/transactions/detail/:transaction_id', authenticateUser, async (req
         res.status(500).json({ message: 'Error al obtener los detalles de la transacción.' });
     }
 });
+
+// eliminar todos los productos del carrito de compras
+app.use('/api', DeleteCartRoutes);
+
+// funciones review de users
+app.use('/api', ReviewRoutes);
+
+// error 404 ruta not found
+app.use("*", (req, res) => {
+    res.status(404).send({ message: "La ruta que intenta consultar no existe" })
+});
+
+
+
 
 module.exports = app;
 
