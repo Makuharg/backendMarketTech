@@ -11,6 +11,6 @@ router.get('/users', GetUsersController.getUsers);
 router.get('/products', GetProductsController.getProducts);
 router.get('/cart/:user_id', authenticateUser, GetCartController.getCart);
 router.get('/transactions/:user_id', authenticateUser, GetTransactionController.getTransactions);
-router.get('/transactions/detail/:user_id', authenticateUser, GetDetailController.getDetails);
+router.get('/transactions/detail/:transaction_id', authenticateUser, GetDetailController.getDetails);
 
 module.exports = router;
