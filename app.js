@@ -72,12 +72,12 @@ app.delete('/user/cart/:product_id', authenticateUser, async (req, res) => {
         }
 
         // Eliminar el producto del carrito
-        await pool.query(
+        const { rows } = await pool.query(
             'DELETE FROM cart WHERE user_id = $1 AND product_id = $2',
             [user_id, product_id]
         );
 
-        res.status(200).json({ message: 'Producto eliminado del carrito.' });
+        res.status(200).json({ message: 'Producto eliminado del carrito.', product: rows[0] });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al eliminar el producto del carrito.' });
