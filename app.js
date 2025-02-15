@@ -81,7 +81,7 @@ app.delete('/api/user/cart/product/:product_id', authenticateUser, async (req, r
     }
 });
 
-app.get('/api/transactions/detail/:transaction_id', authenticateUser, async (req, res) => {
+app.get('/api/user/transactions/detail/:transaction_id', authenticateUser, async (req, res) => {
     const transaction_id = req.params.id; // ID de la transacción
     const user_id = req.user.id; // ID del usuario autenticado
 
