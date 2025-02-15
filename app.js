@@ -12,7 +12,9 @@ const GetRoutes = require('./routes/getRoutes');
 const express = require('express');
 const cors = require('cors');
 const { authenticateUser } = require('./middlewares/authUser');
+const { pool } = require('./server/server');
 const app = express();
+
 
 const port = process.env.PORT || 3000;
 const host = ('RENDER' in process.env) ? '0.0.0.0' : 'localhost';
