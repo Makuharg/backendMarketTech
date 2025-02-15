@@ -56,6 +56,34 @@ app.use('/api', CheckoutRoutes);
 // incrementar o decrementar cantidad de un producto en el carrito de compras 
 app.use('/api', UpdateCartRoutes);
 
+app.delete('/user/cart/:product_id', authenticateUser, async (req, res) => {
+    const product_id = req.params.product_id; // ID del producto a eliminar
+    const user_id = req.user.id; // ID del usuario autenticado
+
+    try {
+        // Verificar si el producto está en el carrito del usuario
+        const cartItem = await pool.query(
+            'SELECT * FROM cart WHERE user_id = $1 AND product_id = $2',
+            [user_id, product_id]
+        );
+
+        if (cartItem.rows.length === 0) {
+            return res.status(404).json({ message: 'El producto no está en el carrito.' });
+        }
+
+        // Eliminar el producto del carrito
+        await pool.query(
+            'DELETE FROM cart WHERE user_id = $1 AND product_id = $2',
+            [user_id, product_id]
+        );
+
+        res.status(200).json({ message: 'Producto eliminado del carrito.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al eliminar el producto del carrito.' });
+    }
+});
+
 // eliminar todos los productos del carrito de compras
 app.use('/api', DeleteCartRoutes);
 
