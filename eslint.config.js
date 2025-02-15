@@ -1,4 +1,4 @@
-module.exports = {
+/* module.exports = {
   env: {
       node: true, // Habilitar variables globales de Node.js
       es2021: true, // Usar características de ES2021
@@ -33,4 +33,4 @@ module.exports = {
           },
       },
   },
-};
+}; */
