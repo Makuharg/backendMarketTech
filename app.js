@@ -14,8 +14,6 @@ const cors = require('cors');
 const { authenticateUser } = require('./middlewares/authUser');
 const { pool } = require('./server/server');
 const app = express();
-const router = express.Router();
-
 
 const port = process.env.PORT || 3000;
 const host = ('RENDER' in process.env) ? '0.0.0.0' : 'localhost';
@@ -55,7 +53,7 @@ app.use('/api', authenticateUser, CheckoutRoutes);
 // incrementar o decrementar cantidad de un producto en el carrito de compras 
 app.use('/api', UpdateCartRoutes);
 
-router.delete('/user/cart/product/:product_id', authenticateUser, async (req, res) => {
+app.delete('api/user/cart/product/:product_id', authenticateUser, async (req, res) => {
     const product_id = req.params.product_id; // ID del producto a eliminar
     const user_id = req.user.id; // ID del usuario autenticado
 
