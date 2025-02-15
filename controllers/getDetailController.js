@@ -3,8 +3,8 @@ const responseView = require('../views/getDetailView');
 
 const getDetails = async (req, res) => {
     try {
-        const { user_id } = req.params;
-        const { rows } = await detailModel.getUserDetails(user_id);
+        const { transaction_id } = req.params;
+        const { rows } = await detailModel.getUserDetails(transaction_id);
         responseView.successResponse(res, rows);
     } catch (error) {
         responseView.errorResponse(res, error);

@@ -1,8 +1,8 @@
 const { pool } = require("../server/server");
 
-const getUserDetails = async (user_id) => {
-    const consulta = 'SELECT * FROM detail_transactions WHERE user_id = $1';
-    return await pool.query(consulta, [user_id]);
+const getUserDetails = async (transaction_id) => {
+    const consulta = 'SELECT * FROM transaction_details WHERE transaction_id = $1';
+    return await pool.query(consulta, [transaction_id]);
 };
 
 module.exports = { getUserDetails };
