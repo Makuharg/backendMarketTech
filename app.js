@@ -24,10 +24,6 @@ app.listen({host: host, port: port});
 app.use(express.json());
 app.use(cors());
 
-//middlewares
-app.use(express.json());
-app.use(cors());
-
 // get Users, get Products, get Cart y get Transactions
 app.use('/api', GetRoutes);
 
@@ -56,7 +52,7 @@ app.use('/api', authenticateUser, CheckoutRoutes);
 // incrementar o decrementar cantidad de un producto en el carrito de compras 
 app.use('/api', UpdateCartRoutes);
 
-app.delete('/user/cart/:product_id', authenticateUser, async (req, res) => {
+app.delete('/user/cart/product/:product_id', authenticateUser, async (req, res) => {
     const product_id = req.params.product_id; // ID del producto a eliminar
     const user_id = req.user.id; // ID del usuario autenticado
 
