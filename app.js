@@ -51,7 +51,7 @@ app.use('/api', DeleteProductRoutes);
 app.use('/api', authenticateUser, NewCartRoutes);
 
 // comprar carrito de compras
-app.use('/api', CheckoutRoutes);
+app.use('/api', authenticateUser, CheckoutRoutes);
 
 // incrementar o decrementar cantidad de un producto en el carrito de compras 
 app.use('/api', UpdateCartRoutes);
