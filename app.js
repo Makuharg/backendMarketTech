@@ -9,6 +9,7 @@ const DeleteCartRoutes = require('./routes/deleteCartRoutes');
 const CheckoutRoutes = require('./routes/checkoutRoutes');
 const ReviewRoutes = require('./routes/reviewRoutes');
 const GetRoutes = require('./routes/getRoutes');
+const DeleteCartItemRoutes = require('./routes/deleteCartItemRoutes');
 const express = require('express');
 const cors = require('cors');
 const { authenticateUser } = require('./middlewares/authUser');
@@ -50,41 +51,9 @@ app.use('/api', authenticateUser, NewCartRoutes);
 // comprar carrito de compras
 app.use('/api', authenticateUser, CheckoutRoutes);
 
-// incrementar o decrementar cantidad de un producto en el carrito de compras 
-app.use('/api', UpdateCartRoutes);
-
-app.delete('/api/user/cart/product/:product_id', authenticateUser, async (req, res) => {
-    const product_id = req.params.product_id; // ID del producto a eliminar
-    const user_id = req.user.id; // ID del usuario autenticado
-
-    try {
-        // Verificar si el producto está en el carrito del usuario
-        const cartItem = await pool.query(
-            'SELECT * FROM cart WHERE user_id = $1 AND product_id = $2',
-            [user_id, product_id]
-        );
-
-        if (cartItem.rows.length === 0) {
-            return res.status(404).json({ message: 'El producto no está en el carrito.' });
-        }
-
-        // Eliminar el producto del carrito
-        const { rows } = await pool.query(
-            'DELETE FROM cart WHERE user_id = $1 AND product_id = $2',
-            [user_id, product_id]
-        );
-
-        res.status(200).json({ message: 'Producto eliminado del carrito.', product: rows[0] });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al eliminar el producto del carrito.' });
-    }
-});
-
 app.get('/api/user/transactions/detail/:transaction_id', authenticateUser, async (req, res) => {
-    const transaction_id = req.params.transaction_id; // ID de la transacción
-    const user_id = req.user.id; // ID del usuario autenticado
-
+    const { transaction_id } = req.params; // ID de la transacción
+    
     try {
         // Obtener los detalles de la transacción
         const transactionDetails = await pool.query(
@@ -141,6 +110,12 @@ app.get('/api/user/transactions/detail/:transaction_id', authenticateUser, async
         res.status(500).json({ message: 'Error al obtener los detalles de la transacción.' });
     }
 });
+
+// incrementar o decrementar cantidad de un producto en el carrito de compras 
+app.use('/api', UpdateCartRoutes);
+
+// eliminar un item del carrito de compras
+app.use('/api', DeleteCartItemRoutes);
 
 // eliminar todos los productos del carrito de compras
 app.use('/api', DeleteCartRoutes);
