@@ -26,31 +26,6 @@ app.listen({host: host, port: port});
 app.use(express.json());
 app.use(cors());
 
-// get Users, get Products, get Cart y get Transactions
-app.use('/api', GetRoutes);
-
-// signup de usuario
-app.use('/api', SignupRoutes);
-
-// login de usuario
-app.use('/api', LoginRoutes);
-
-// registro de un producto
-app.use('/api', NewProductRoutes);
-
-// modificar producto registrado
-app.use('/api', UpdateProductRoutes);
-
-// el usuario puede eliminar un producto suyo
-app.use('/api', DeleteProductRoutes);
-
-// CARRITO DE COMPRAS
-// El usuario agrega un producto al carrito
-app.use('/api', authenticateUser, NewCartRoutes);
-
-// comprar carrito de comprasonrender.com/api/
-app.use('/api', authenticateUser, CheckoutRoutes);
-
 app.get('/api/transactions/detail/:transaction_id', async (req, res) => {
     const { transaction_id } = req.params; // ID de la transacción
     
@@ -110,6 +85,33 @@ app.get('/api/transactions/detail/:transaction_id', async (req, res) => {
         res.status(500).json({ message: 'Error al obtener los detalles de la transacción.' });
     }
 });
+
+// get Users, get Products, get Cart y get Transactions
+app.use('/api', GetRoutes);
+
+// signup de usuario
+app.use('/api', SignupRoutes);
+
+// login de usuario
+app.use('/api', LoginRoutes);
+
+// registro de un producto
+app.use('/api', NewProductRoutes);
+
+// modificar producto registrado
+app.use('/api', UpdateProductRoutes);
+
+// el usuario puede eliminar un producto suyo
+app.use('/api', DeleteProductRoutes);
+
+// CARRITO DE COMPRAS
+// El usuario agrega un producto al carrito
+app.use('/api', authenticateUser, NewCartRoutes);
+
+// comprar carrito de comprasonrender.com/api/
+app.use('/api', authenticateUser, CheckoutRoutes);
+
+
 
 // incrementar o decrementar cantidad de un producto en el carrito de compras 
 app.use('/api', UpdateCartRoutes);
