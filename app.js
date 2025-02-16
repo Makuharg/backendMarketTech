@@ -48,10 +48,10 @@ app.use('/api', DeleteProductRoutes);
 // El usuario agrega un producto al carrito
 app.use('/api', authenticateUser, NewCartRoutes);
 
-// comprar carrito de compras
+// comprar carrito de comprasonrender.com/api/
 app.use('/api', authenticateUser, CheckoutRoutes);
 
-app.get('/api/user/transactions/detail/:transaction_id', authenticateUser, async (req, res) => {
+app.get('/api/user/:transaction_id', authenticateUser, async (req, res) => {
     const { transaction_id } = req.params; // ID de la transacción
     
     try {
