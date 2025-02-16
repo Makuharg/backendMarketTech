@@ -8,8 +8,6 @@ const responseView = {
 };
 
 const TransactionView = {
-    notFound: (res) => res.status(404).json({ message: 'Transacción no encontrada.' }),
-
     successResponse: (res, transaction) => {
         res.status(200).json({
             transaction_id: transaction.transaction_id,
@@ -24,8 +22,6 @@ const TransactionView = {
 };
 
 const TransactionDetailView = {
-    notFound: (res) => res.status(404).json({ message: 'Transacción no encontrada o no tienes permiso para verla.' }),
-
     successResponse: (res, rows) => {
         const response = {
             transaction_id: rows[0].transaction_id,

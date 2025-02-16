@@ -6,11 +6,6 @@ const getTransactionDetails = async (req, res) => {
 
     try {
         const transactionDetails = await TransactionModel.getTransactionDetails(transaction_id);
-
-        if (transactionDetails.rows.length === 0) {
-            return TransactionDetailView.notFound(res);
-        }
-
         return TransactionDetailView.successResponse(res, transactionDetails.rows);
     } catch (error) {
         console.error(error);
