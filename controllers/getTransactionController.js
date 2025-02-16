@@ -1,14 +1,22 @@
-const transactionModel = require('../models/getTransactionModel');
-const responseView = require('../views/getResponseView');
+const TransactionModel = require('../models/getTransactionModel');
+const TransactionView = require('../views/getResponseView');
 
-const getTransactions = async (req, res) => {
+const getTransaction = async (req, res) => {
+    const { transaction_id } = req.params; // ID de la transacción
+    const user_id = req.user.id; // ID del usuario autenticado
+
     try {
-        const { user_id } = req.params;
-        const { rows } = await transactionModel.getUserTransactions(user_id);
-        responseView.successResponse(res, rows);
+        const transactionDetails = await TransactionModel.getTransactionDetails(transaction_id, user_id);
+
+        if (transactionDetails.rows.length === 0) {
+            return TransactionView.notFound(res);
+        }
+
+        return TransactionView.successResponse(res, transactionDetails.rows[0]);
     } catch (error) {
-        responseView.errorResponse(res, error);
+        console.error(error);
+        return TransactionView.errorResponse(res);
     }
 };
 
-module.exports = { getTransactions };
+module.exports = { getTransaction };
