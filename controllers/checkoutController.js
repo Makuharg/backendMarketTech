@@ -17,11 +17,15 @@ const checkoutCart = async (req, res) => {
             return checkoutView.renderErrorResponse(res, 400, 'El carrito está vacío.');
         };
 
-        const product = await checkoutModel.getProductDetails(item.product_id);
-        const seller_id = product.rows[0].seller_id
-
         // Crear una nueva transacción
-        const newTransaction = await checkoutModel.createTransaction(buyerId, seller_id, total_price);
+        const newTransaction = await pool.query(
+            `INSERT INTO transactions 
+             (user_id, seller_id, total_price, state) 
+             VALUES ($1, $2, $3, $4) 
+             RETURNING *`,
+            [buyerId, cartItems.rows[0].seller_id, total_price, 'COMPLETED'] // Estado: COMPLETED
+        );
+
         const transactionId = newTransaction.rows[0].id;
 
 

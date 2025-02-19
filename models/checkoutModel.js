@@ -16,13 +16,6 @@ const getCartItems = async (userId) => {
     return await pool.query('SELECT * FROM cart WHERE user_id = $1', [userId]);
 };
 
-const createTransaction = async (userId, seller_id, total_price) => {
-    return await pool.query(
-        'INSERT INTO transactions (user_id, seller_id, total_price, state) VALUES ($1, $2, $3, $4) RETURNING *',
-        [userId, seller_id, total_price, 'pending']
-    );
-};
-
 const getProductDetails = async (productId) => {
     return await pool.query(
         'SELECT price, user_id AS seller_id FROM products WHERE id = $1',
