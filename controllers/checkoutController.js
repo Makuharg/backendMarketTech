@@ -4,7 +4,7 @@ const checkoutView = require('../views/checkoutView');
 
 const checkoutCart = async (req, res) => {
     const buyerId = req.user.id;
-    const { total_price } = req.body;
+    const { total_price } = req.body.cart;
 
     try {
         // Iniciar la transacción
