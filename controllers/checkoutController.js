@@ -1,4 +1,5 @@
 const checkoutModel = require('../models/checkoutModel');
+const { pool } = require('../server/server');
 const checkoutView = require('../views/checkoutView');
 
 const checkoutCart = async (req, res) => {
@@ -12,6 +13,7 @@ const checkoutCart = async (req, res) => {
         // Obtener los productos del carrito
         const cartItems = await checkoutModel.getCartItems(buyerId);
 
+
         if (cartItems.rows.length === 0) {
             await checkoutModel.rollbackTransaction();
             return checkoutView.renderErrorResponse(res, 400, 'El carrito está vacío.');
@@ -23,7 +25,7 @@ const checkoutCart = async (req, res) => {
              (user_id, seller_id, total_price, state) 
              VALUES ($1, $2, $3, $4) 
              RETURNING *`,
-            [buyerId, cartItems.rows[0].seller_id, total_price, 'COMPLETED'] // Estado: COMPLETED
+            [buyerId, cartItems.rows[0].user_id, total_price, 'completed'] // Estado: COMPLETED
         );
 
         const transactionId = newTransaction.rows[0].id;
