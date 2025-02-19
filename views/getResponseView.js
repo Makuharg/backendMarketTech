@@ -8,17 +8,11 @@ const responseView = {
 };
 
 const TransactionView = {
-    successResponse: (res, transaction) => {
-        res.status(200).json({
-            transaction_id: transaction.transaction_id,
-            buyer_id: transaction.buyer_id,
-            buyer_name: transaction.buyer_name,
-            date: transaction.date,
-            total_price: transaction.total_price,
-        });
+    successResponse: (res, rows) => {
+        res.status(200).json(rows);
     },
 
-    errorResponse: (res) => res.status(500).json({ message: 'Error al obtener los detalles de la transacción.' }),
+    errorResponse: (res) => res.status(500).json({ message: 'Error al obtener los datos.' }),
 };
 
 const TransactionDetailView = {

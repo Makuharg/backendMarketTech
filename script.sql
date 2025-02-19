@@ -38,6 +38,8 @@ CREATE TYPE transaction_state AS ENUM ('pending', 'completed', 'cancelled');
 CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),  -- Usuario que realiza la transacción
+    seller_id INTEGER NOT NULL REFERENCES users(id),  -- Usuario vendedor
+    total_price NUMERIC(10,2) NOT NULL,
     date TIMESTAMPTZ DEFAULT NOW(),  -- Fecha de la transacción
     state transaction_state NOT NULL  -- Estado de la transacción
 );

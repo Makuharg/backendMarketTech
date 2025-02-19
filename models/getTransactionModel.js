@@ -1,28 +1,28 @@
 const { pool }  = require('../server/server');
 
-const getTransactionDetails = async (transaction_id, user_id) => {
-    const query = `
-        SELECT 
+const getTransactions = async (user_id) => {
+    const query = 
+    `SELECT 
             t.id AS transaction_id,
-            td.buyer_id,
-            u.username AS buyer_name,
+            t.user_id AS buyer_id,
+            u_buyer.username AS buyer_name,
+            t.seller_id,
+            u_seller.username AS seller_name,
             t.date,
-            SUM(td.subtotal) AS total_price
+            t.total_price,
+            t.state
         FROM 
             transactions t
         JOIN 
-            transaction_details td ON t.id = td.transaction_id
+            users u_buyer ON t.user_id = u_buyer.id
         JOIN 
-            users u ON td.buyer_id = u.id
+            users u_seller ON t.seller_id = u_seller.id
         WHERE 
-            t.id = $1 AND (td.buyer_id = $2 OR td.seller_id = $2)
-        GROUP BY 
-            t.id, td.buyer_id, u.username, t.date;
-    `;
+            t.user_id = $1 OR t.seller_id = $1`;
 
-    const values = [transaction_id, user_id];
+    const values = [user_id];
 
     return await pool.query(query, values);
 };
 
-module.exports = { getTransactionDetails };
+module.exports = { getTransactions };
