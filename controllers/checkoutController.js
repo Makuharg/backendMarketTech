@@ -3,6 +3,7 @@ const checkoutView = require('../views/checkoutView');
 
 const checkoutCart = async (req, res) => {
     const buyerId = req.user.id;
+    const { total_price } = req.body;
 
     try {
         // Iniciar la transacción
@@ -14,11 +15,15 @@ const checkoutCart = async (req, res) => {
         if (cartItems.rows.length === 0) {
             await checkoutModel.rollbackTransaction();
             return checkoutView.renderErrorResponse(res, 400, 'El carrito está vacío.');
-        }
+        };
+
+        const product = await checkoutModel.getProductDetails(item.product_id);
+        const seller_id = product.rows[0].seller_id
 
         // Crear una nueva transacción
-        const newTransaction = await checkoutModel.createTransaction(buyerId);
+        const newTransaction = await checkoutModel.createTransaction(buyerId, seller_id, total_price);
         const transactionId = newTransaction.rows[0].id;
+
 
         // Procesar cada producto en el carrito
         for (const item of cartItems.rows) {
