@@ -75,7 +75,6 @@ module.exports = {
     rollbackTransaction,
     commitTransaction,
     getCartItems,
-    createTransaction,
     getProductDetails,
     insertTransactionDetail,
     updateProductStock,
