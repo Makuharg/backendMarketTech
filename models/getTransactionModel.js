@@ -6,8 +6,6 @@ const getTransactions = async (user_id) => {
             t.id AS transaction_id,
             t.user_id AS buyer_id,
             u_buyer.username AS buyer_name,
-            t.seller_id,
-            u_seller.username AS seller_name,
             t.date,
             t.total_price,
             t.state
