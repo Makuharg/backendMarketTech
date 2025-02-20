@@ -23,7 +23,7 @@ const checkoutCart = async (req, res) => {
         const newTransaction = await pool.query(
             `INSERT INTO transactions 
              (user_id, total_price, state) 
-             VALUES ($1, $2, $3, $4) 
+             VALUES ($1, $2, $3) 
              RETURNING *`,
             [buyerId, total_price, 'completed'] // Estado: COMPLETED
         );
