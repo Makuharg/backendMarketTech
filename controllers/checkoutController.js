@@ -1,5 +1,4 @@
 const checkoutModel = require('../models/checkoutModel');
-const { pool } = require('../server/server');
 const checkoutView = require('../views/checkoutView');
 
 const checkoutCart = async (req, res) => {
@@ -20,15 +19,8 @@ const checkoutCart = async (req, res) => {
         };
 
         // Crear una nueva transacción
-        const newTransaction = await pool.query(
-            `INSERT INTO transactions 
-             (user_id, total_price, state) 
-             VALUES ($1, $2, $3) 
-             RETURNING *`,
-            [buyerId, total_price, 'completed'] // Estado: COMPLETED
-        );
-
-        const transactionId = newTransaction.rows[0].id;
+        const createTransaction = await checkoutModel.newTransaction(buyerId, total_price);  
+        const transactionId = createTransaction.rows[0].id;
 
 
         // Procesar cada producto en el carrito

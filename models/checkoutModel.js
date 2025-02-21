@@ -16,6 +16,14 @@ const getCartItems = async (userId) => {
     return await pool.query('SELECT * FROM cart WHERE user_id = $1', [userId]);
 };
 
+const newTransaction = async (buyerId,total_price) => {
+    return await pool.query(`INSERT INTO transactions 
+             (user_id, total_price, state) 
+             VALUES ($1, $2, $3) 
+             RETURNING *`,
+            [buyerId, total_price, 'completed']); // Estado: COMPLETED
+};
+
 const getProductDetails = async (productId) => {
     return await pool.query(
         'SELECT price, user_id AS seller_id FROM products WHERE id = $1',
@@ -79,6 +87,7 @@ module.exports = {
     insertTransactionDetail,
     updateProductStock,
     clearCart,
-    getTransactionDetails
+    getTransactionDetails,
+    newTransaction
 };
 
