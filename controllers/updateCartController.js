@@ -5,6 +5,7 @@ const updateCartQuantity = async (req, res) => {
     const product_id = req.params.product_id;
     const { action } = req.body; // "increment" o "decrement"
     const user_id = req.user.id;
+    console.log(product_id, action, user_id)
 
     try {
         const existingCartItem = await CartModel.getCartItem(user_id, product_id);

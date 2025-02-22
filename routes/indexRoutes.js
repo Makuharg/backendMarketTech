@@ -29,7 +29,7 @@ router.post('/user/product', authenticateUser, NewProductController.createProduc
 router.put('/user/product/:id', authenticateUser, UpdateProductController.updateProduct);
 router.delete('/user/product/:id', authenticateUser, DeleteProductController.deleteProduct);
 router.post('/user/cart', authenticateUser, NewCartController.addToCart);
-router.post('/user/cart/:product_id', authenticateUser, UpdateCartController.updateCartQuantity);
+router.post('/user/cart/update/:product_id', authenticateUser, UpdateCartController.updateCartQuantity);
 router.delete('/user/cart/product/:product_id', authenticateUser, cartController.deleteProductFromCart);
 router.delete('/user/cart', authenticateUser, DeleteCartController.clearCart);
 router.post('/user/cart/checkout', authenticateUser, CheckoutController.checkoutCart);

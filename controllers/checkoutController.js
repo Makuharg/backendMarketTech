@@ -3,7 +3,8 @@ const checkoutView = require('../views/checkoutView');
 
 const checkoutCart = async (req, res) => {
     const buyerId = req.user.id;
-    const { total_price } = req.body.cart;
+    const { total_price } = req.body;
+    console.log(total_price, buyerId)
 
     try {
         // Iniciar la transacción
@@ -21,7 +22,7 @@ const checkoutCart = async (req, res) => {
         // Crear una nueva transacción
         const createTransaction = await checkoutModel.newTransaction(buyerId, total_price);  
         const transactionId = createTransaction.rows[0].id;
-
+        console.log(transactionId)
 
         // Procesar cada producto en el carrito
         for (const item of cartItems.rows) {
