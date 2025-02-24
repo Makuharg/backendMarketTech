@@ -17,11 +17,7 @@ const getCartItems = async (userId) => {
 };
 
 const newTransaction = async (buyerId,total_price) => {
-    return await pool.query(`INSERT INTO transactions 
-             (user_id, total_price, state) 
-             VALUES ($1, $2, $3) 
-             RETURNING *`,
-            [buyerId, total_price, 'completed']); // Estado: COMPLETED
+    return await pool.query(`INSERT INTO transactions(user_id, total_price, state) VALUES ($1, $2, $3) RETURNING *`,[buyerId, total_price, 'completed']); // Estado: COMPLETED
 };
 
 const getProductDetails = async (productId) => {
@@ -83,11 +79,11 @@ module.exports = {
     rollbackTransaction,
     commitTransaction,
     getCartItems,
+    newTransaction,
     getProductDetails,
     insertTransactionDetail,
     updateProductStock,
     clearCart,
-    getTransactionDetails,
-    newTransaction
+    getTransactionDetails
 };
 

@@ -22,7 +22,8 @@ const checkoutCart = async (req, res) => {
         // Crear una nueva transacción
         const createTransaction = await checkoutModel.newTransaction(buyerId, total_price);  
         const transactionId = createTransaction.rows[0].id;
-        console.log(transactionId)
+
+        
 
         // Procesar cada producto en el carrito
         for (const item of cartItems.rows) {
@@ -54,7 +55,7 @@ const checkoutCart = async (req, res) => {
         const transactionDetails = await checkoutModel.getTransactionDetails(transactionId);
 
         // Renderizar la respuesta con la vista
-        return checkoutView.renderCheckoutResponse(res, newTransaction.rows[0], transactionDetails.rows);
+        return checkoutView.renderCheckoutResponse(res, createTransaction.rows[0], transactionDetails.rows);
     } catch (error) {
         await checkoutModel.rollbackTransaction();
         console.error(error);

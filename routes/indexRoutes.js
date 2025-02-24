@@ -21,7 +21,7 @@ const CheckoutController = require('../controllers/checkoutController');
 router.get('/users', GetUsersController.getUsers);
 router.get('/products', GetProductsController.getProducts);
 router.get('/cart/:user_id', authenticateUser, GetCartController.getCart);
-router.get('/transactions/:user_id', authenticateUser, GetTransactionController.getUserTransactions);
+router.get('/transactions/user/:user_id', authenticateUser, GetTransactionController.getUserTransactions);
 router.get('/transactions/detail/:transaction_id', authenticateUser, GetTransactionDetailController.getTransactionDetails);
 router.post('/login', LoginController.login);
 router.post('/signup', SignupController.signUp);
