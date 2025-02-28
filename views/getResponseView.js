@@ -8,8 +8,11 @@ const responseView = {
 };
 
 const TransactionView = {
-    successResponse: (res, rows) => {
-        res.status(200).json(rows);
+    successResponse: (res, transactions) => {
+        res.status(200).json({
+            purchases: transactions.purchases,
+            sales: transactions.sales
+        });
     },
 
     errorResponse: (res) => res.status(500).json({ message: 'Error al obtener los datos.' }),

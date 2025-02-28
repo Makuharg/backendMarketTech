@@ -7,7 +7,7 @@ const getUserTransactions = async (req, res) => {
     try {
         const userTransactions = await TransactionModel.getTransactions(user_id);
 
-        return TransactionView.successResponse(res, userTransactions.rows);
+        return TransactionView.successResponse(res, userTransactions);
     } catch (error) {
         console.error(error);
         return TransactionView.errorResponse(res);
