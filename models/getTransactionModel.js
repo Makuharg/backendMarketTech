@@ -19,23 +19,32 @@ const getTransactions = async (user_id) => {
 
     // Consultar las ventas realizadas por el usuario
     const salesQuery = 
-        `SELECT 
-            t.id AS transaction_id,
-            td.seller_id AS seller_id,
-            u.username AS seller_name,
+            `SELECT 
+            td.transaction_id,
+            td.seller_id,
+            seller.username AS seller_name,
             t.date,
-            t.total_price,
-            t.state
+            td.product_id,
+            p.title AS product_name,
+            td.quantity,
+            td.unit_price,
+            (td.quantity * td.unit_price) AS subtotal,
+            td.buyer_id,
+            buyer.username AS buyer_name
         FROM 
-            transactions t
+            transaction_details td
         JOIN 
-            transaction_details td ON t.id = td.transaction_id
+            transactions t ON td.transaction_id = t.id
         JOIN 
-            users u ON td.seller_id = u.id
+            users seller ON td.seller_id = seller.id
+        JOIN 
+            users buyer ON td.buyer_id = buyer.id
+        JOIN 
+            products p ON td.product_id = p.id
         WHERE 
             td.seller_id = $1
-        GROUP BY 
-            t.id, td.seller_id, u.username, t.date, t.total_price, t.state`;
+        ORDER BY 
+            td.transaction_id, td.product_id`;
 
     const values = [user_id];
 
