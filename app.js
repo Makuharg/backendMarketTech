@@ -28,7 +28,9 @@ const upload = multer({ dest : 'uploads' })
 app.post('/api/user/files/upload', upload.single('image'), async(req,res)=>{
     try {
         const result = await cloudinary.uploader.upload(req.file.path);
-        res.status(200).json(result.url);
+        res.status(200).json({
+            url: result.url
+        });
 
     } catch (error) {
         console.log('error', error);
