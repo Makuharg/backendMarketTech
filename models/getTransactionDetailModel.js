@@ -1,6 +1,6 @@
 const { pool } = require("../server/server");
 
-const getTransactionDetails = async (user_id) => {
+const getTransactionDetails = async (transaction_id, user_id) => {
     const query = `
         SELECT 
             td.id,
@@ -14,9 +14,10 @@ const getTransactionDetails = async (user_id) => {
             u_buyer.username AS buyer_name,
             u_seller.username AS seller_name,
             t.date,
-            t.total_price,
-            t.state,
-            p.title AS product_name
+            CASE 
+                WHEN td.buyer_id = $2 THEN 'buyer' 
+                WHEN td.seller_id = $2 THEN 'seller' 
+            END AS role
         FROM 
             transaction_details td
         JOIN 
@@ -28,10 +29,11 @@ const getTransactionDetails = async (user_id) => {
         JOIN 
             transactions t ON td.transaction_id = t.id
         WHERE 
-            td.buyer_id = $1 OR td.seller_id = $1;
+            td.transaction_id = $1
+            AND (td.buyer_id = $2 OR td.seller_id = $2);
     `;
 
-    const values = [user_id];
+    const values = [transaction_id, user_id];
 
     return await pool.query(query, values);
 };
