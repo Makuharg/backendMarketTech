@@ -54,7 +54,7 @@ CREATE TABLE transaction_details (
     seller_id INTEGER NOT NULL REFERENCES users(id)  -- Usuario vendedor
 );
 
-CREATE TABLE reviews (
+/* CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
     product_id INTEGER NOT NULL REFERENCES products(id),
     user_id INTEGER NOT NULL REFERENCES users(id),
@@ -62,3 +62,4 @@ CREATE TABLE reviews (
     comment TEXT,
     comment_date TIMESTAMPTZ DEFAULT NOW()
 );
+ */
